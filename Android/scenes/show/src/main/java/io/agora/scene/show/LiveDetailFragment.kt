@@ -879,7 +879,7 @@ class LiveDetailFragment : Fragment() {
                 mPKCountDownLatch!!.cancel()
                 mPKCountDownLatch = null
             }
-            mPKCountDownLatch = object : CountDownTimer(120 * 1000 - 1, 1000) {
+            mPKCountDownLatch = object : CountDownTimer(10 * 60 * 1000 - 1, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     val min: Long = (millisUntilFinished / 1000) / 60
                     val sec: Long = (millisUntilFinished / 1000) % 60

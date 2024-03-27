@@ -21,6 +21,7 @@ rootProject.name = "AgoraLive"
 include ':app'
 include ':common'
 
+include ':rtmSyncManager'
 include ':scenes:show'
 
 

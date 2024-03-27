@@ -68,6 +68,8 @@ object VideoSetting {
         V_480P(856, 480),
         V_360P(640, 360),
         V_180P(360, 180),
+        V_INDIA_480P(640, 480),
+        V_INDIA_240P(320, 240),
     }
 
     /**
@@ -314,8 +316,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_720P,
-                encodeResolution = Resolution.V_720P,
+                captureResolution = Resolution.V_INDIA_480P,
+                encodeResolution = Resolution.V_INDIA_480P,
                 frameRate = FrameRate.FPS_15,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_Low_1V1.value,
@@ -335,8 +337,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_720P,
-                encodeResolution = Resolution.V_720P,
+                captureResolution = Resolution.V_INDIA_480P,
+                encodeResolution = Resolution.V_INDIA_480P,
                 frameRate = FrameRate.FPS_24,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_Medium_1V1.value,
@@ -356,8 +358,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_1080P,
-                encodeResolution = Resolution.V_1080P,
+                captureResolution = Resolution.V_INDIA_480P,
+                encodeResolution = Resolution.V_INDIA_480P,
                 frameRate = FrameRate.FPS_24,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_High_1V1.value,
@@ -398,8 +400,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_540P,
-                encodeResolution = Resolution.V_540P,
+                captureResolution = Resolution.V_INDIA_240P,
+                encodeResolution = Resolution.V_INDIA_240P,
                 frameRate = FrameRate.FPS_15,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_Low_PK.value,
@@ -419,8 +421,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_540P,
-                encodeResolution = Resolution.V_540P,
+                captureResolution = Resolution.V_INDIA_240P,
+                encodeResolution = Resolution.V_INDIA_240P,
                 frameRate = FrameRate.FPS_15,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_Medium_PK.value,
@@ -440,8 +442,8 @@ object VideoSetting {
                 lowLightEnhance = false,
                 videoDenoiser = false,
                 PVC = false,
-                captureResolution = Resolution.V_720P,
-                encodeResolution = Resolution.V_720P,
+                captureResolution = Resolution.V_INDIA_240P,
+                encodeResolution = Resolution.V_INDIA_240P,
                 frameRate = FrameRate.FPS_15,
                 bitRate = BitRate.BR_STANDRAD.value,
                 bitRateRecommend = BitRate.BR_High_PK.value,
@@ -1227,32 +1229,32 @@ object VideoSetting {
         svc: Boolean? = null
     ) {
         ShowLogger.d("VideoSettings", "updateRTCLowStreamSetting, enableLowStream:$enableLowStream, svc:$svc")
-        val rtcEngine = RtcEngineInstance.rtcEngine
+//        val rtcEngine = RtcEngineInstance.rtcEngine
 
-        val connection = rtcConnection ?: return
-        if (enableLowStream) {
-            val resolution = encoderResolution ?: return
-            val br = bitRate ?: return
-            val fps = frameRate ?: return
-            val enableSVC = svc ?: return
-
-            if (enableSVC) {
-                rtcEngine.setParameters("{\"che.video.minor_stream_num_temporal_layers\": 2}")
-                rtcEngine.setParameters("{\"rtc.video.high_low_video_ratio_enabled\": true}")
-                rtcEngine.setParameters("{\"che.video.enable_264_fix_svc_nego\": false}")
-                rtcEngine.setParameters("{\"rtc.video.low_stream_enable_hw_encoder\": false}")
-            } else {
-                rtcEngine.setParameters("{\"rtc.video.high_low_video_ratio_enabled\": false}")
-                rtcEngine.setParameters("{\"rtc.video.low_stream_enable_hw_encoder\": true}")
-            }
-
-            rtcEngine.setDualStreamModeEx(
-                Constants.SimulcastStreamMode.ENABLE_SIMULCAST_STREAM, SimulcastStreamConfig(
-                    VideoEncoderConfiguration.VideoDimensions(
-                        resolution.width, resolution.height
-                    ), br, fps.fps), connection)
-        } else {
-            rtcEngine.setDualStreamModeEx(Constants.SimulcastStreamMode.DISABLE_SIMULCAST_STREAM,SimulcastStreamConfig(), connection)
-        }
+//        val connection = rtcConnection ?: return
+//        if (enableLowStream) {
+//            val resolution = encoderResolution ?: return
+//            val br = bitRate ?: return
+//            val fps = frameRate ?: return
+//            val enableSVC = svc ?: return
+//
+//            if (enableSVC) {
+//                rtcEngine.setParameters("{\"che.video.minor_stream_num_temporal_layers\": 2}")
+//                rtcEngine.setParameters("{\"rtc.video.high_low_video_ratio_enabled\": true}")
+//                rtcEngine.setParameters("{\"che.video.enable_264_fix_svc_nego\": false}")
+//                rtcEngine.setParameters("{\"rtc.video.low_stream_enable_hw_encoder\": false}")
+//            } else {
+//                rtcEngine.setParameters("{\"rtc.video.high_low_video_ratio_enabled\": false}")
+//                rtcEngine.setParameters("{\"rtc.video.low_stream_enable_hw_encoder\": true}")
+//            }
+//
+//            rtcEngine.setDualStreamModeEx(
+//                Constants.SimulcastStreamMode.ENABLE_SIMULCAST_STREAM, SimulcastStreamConfig(
+//                    VideoEncoderConfiguration.VideoDimensions(
+//                        resolution.width, resolution.height
+//                    ), br, fps.fps), connection)
+//        } else {
+//            rtcEngine.setDualStreamModeEx(Constants.SimulcastStreamMode.DISABLE_SIMULCAST_STREAM,SimulcastStreamConfig(), connection)
+//        }
     }
 }
