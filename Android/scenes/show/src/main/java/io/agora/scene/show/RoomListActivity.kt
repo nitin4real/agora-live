@@ -26,6 +26,10 @@ import io.agora.scene.show.widget.PresetAudienceDialog
 import io.agora.scene.widget.basic.BindingSingleAdapter
 import io.agora.scene.widget.basic.BindingViewHolder
 import io.agora.scene.widget.utils.StatusBarUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Room list activity
@@ -83,7 +87,17 @@ class RoomListActivity : AppCompatActivity() {
             preloadChannels()
         })
         initView()
-        initVideoSettings()
+
+        // 使用协程执行耗时初始化操作
+        CoroutineScope(Dispatchers.Main).launch {
+            val rtcEngine = withContext(Dispatchers.IO) {
+                // rtc 初始化耗时
+                RtcEngineInstance.rtcEngine
+            }
+
+            // 根据设备打分 设置观众端视频最佳实践
+            initVideoSettings()
+        }
     }
 
     /**

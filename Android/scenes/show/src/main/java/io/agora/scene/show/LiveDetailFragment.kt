@@ -1551,7 +1551,7 @@ class LiveDetailFragment : Fragment() {
         mService.getAllPKInvitationList(mRoomInfo.roomId,false, { list ->
             list.forEach {
                 if (it.userId == UserManager.getInstance().user.id.toString()
-                    && it.status == ShowRoomRequestStatus.waitting.value
+                    && it.status == ShowRoomRequestStatus.waitting.value && interactionInfo == null
                 ) {
                     preparePKingMode(it.fromRoomId)
                     showPKInvitationDialog(it.fromName)
