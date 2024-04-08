@@ -602,8 +602,9 @@ class LiveDetailFragment : Fragment() {
         val bottomLayout = mBinding.bottomLayout
         if (isRoomOwner) {
             bottomLayout.ivSetting.isVisible = true
-            bottomLayout.ivMusic.isVisible = true
-            bottomLayout.ivBeauty.isVisible = true
+            bottomLayout.ivMusic.isVisible = false
+            bottomLayout.ivBeauty.isVisible = false
+            bottomLayout.ivLinking.isVisible = false
 
             if (isPKing()) {
                 bottomLayout.ivLinking.isEnabled = false
@@ -632,6 +633,7 @@ class LiveDetailFragment : Fragment() {
 
             bottomLayout.ivSetting.isVisible = true
             bottomLayout.flPK.isVisible = false
+            bottomLayout.flLinking.isVisible = false
 
 
             if (isPKing()) {
@@ -654,7 +656,7 @@ class LiveDetailFragment : Fragment() {
                 bottomLayout.ivMusic.isVisible = false
                 bottomLayout.ivBeauty.isVisible = false
 
-                bottomLayout.flLinking.isVisible = true
+                bottomLayout.flLinking.isVisible = false
                 bottomLayout.ivLinking.imageTintList =
                     ColorStateList.valueOf(context.resources.getColor(R.color.grey_7e))
             }
@@ -1275,7 +1277,9 @@ class LiveDetailFragment : Fragment() {
             }
 
             override fun onStopPKingChosen(dialog: LivePKDialog) {
-                mService.stopInteraction(mRoomInfo.roomId, interactionInfo!!)
+                interactionInfo?.let {
+                    mService.stopInteraction(mRoomInfo.roomId, it)
+                }
             }
         })
         if (!mPKDialog.isVisible) {
