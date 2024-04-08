@@ -223,12 +223,11 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
      *
      */
     private fun initRtcEngine() {
-        val cacheQualityResolution = PictureQualityDialog.getCacheQualityResolution()
         mRtcEngine.setCameraCapturerConfiguration(
             CameraCapturerConfiguration(
                 CameraCapturerConfiguration.CaptureFormat(
-                    cacheQualityResolution.width,
-                    cacheQualityResolution.height,
+                    640,
+                    480,
                     15
                 )
             )

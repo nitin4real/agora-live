@@ -88,6 +88,10 @@ class LivePKDialog : BottomSheetDialogFragment() {
                 pkDialogListener.onInviteButtonChosen(this@LivePKDialog, roomItem)
             }
 
+            override fun onCancelMicSeatItemChosen(roomItem: LiveRoomConfig) {
+                pkDialogListener.onCancelButtonChosen(this@LivePKDialog, roomItem)
+            }
+
             override fun onRequestRefreshing() {
                 pkDialogListener.onRequestMessageRefreshing(this@LivePKDialog)
             }
@@ -138,12 +142,13 @@ class LivePKDialog : BottomSheetDialogFragment() {
     fun setOnlineBroadcasterList(interactionInfo: ShowInteractionInfo?, roomList : List<ShowRoomDetailModel>, invitationList : List<ShowPKInvitation>) {
         val list = ArrayList<LiveRoomConfig>()
         roomList.forEach { roomItem ->
-            val invitation = invitationList.filter { it.userId == roomItem.ownerId }.getOrNull(0)
-            if (invitation != null && invitation.status == ShowRoomRequestStatus.waitting.value) {
-                list.add(LiveRoomConfig(roomItem, true))
-            } else {
-                list.add(LiveRoomConfig(roomItem, false))
-            }
+            val invitation = invitationList.filter { it.userId == roomItem.ownerId && it.roomId == roomItem.roomId }.getOrNull(0)
+
+            list.add(LiveRoomConfig(
+                roomItem,
+                invitation != null && invitation.status == ShowRoomRequestStatus.waitting.value,
+                if (interactionInfo != null && interactionInfo.userId == roomItem.ownerId && interactionInfo.roomId == roomItem.roomId) interactionInfo.interactStatus else roomItem.interactStatus
+            ))
         }
         pkFragment.setOnlineBroadcasterList(interactionInfo, list)
     }

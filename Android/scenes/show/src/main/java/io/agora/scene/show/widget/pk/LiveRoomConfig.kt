@@ -10,7 +10,7 @@ import io.agora.scene.show.service.ShowRoomDetailModel
  * @param room
  * @param waitingForPK
  */
-class LiveRoomConfig constructor(room: ShowRoomDetailModel, waitingForPK: Boolean) {
+class LiveRoomConfig constructor(room: ShowRoomDetailModel, waitingForPK: Boolean, interactStatus: Int) {
     /**
      * Room id
      */
@@ -82,7 +82,7 @@ class LiveRoomConfig constructor(room: ShowRoomDetailModel, waitingForPK: Boolea
         ownerAvatar = room.ownerAvatar
         ownerName = room.ownerName
         roomStatus = room.roomStatus
-        interactStatus = room.interactStatus
+        this.interactStatus = interactStatus
         createdAt = room.createdAt
         updatedAt = room.updatedAt
         this.waitingForPK = waitingForPK
@@ -150,4 +150,6 @@ class LiveRoomConfig constructor(room: ShowRoomDetailModel, waitingForPK: Boolea
      *
      */
     fun isRobotRoom() = roomId.length > robotMaxCount
+
+    fun getRoomId() = roomId
 }

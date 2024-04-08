@@ -21,6 +21,8 @@ interface OnPKDialogActionListener {
      */
     fun onInviteButtonChosen(dialog: LivePKDialog, roomItem: LiveRoomConfig)
 
+    fun onCancelButtonChosen(dialog: LivePKDialog, roomItem: LiveRoomConfig)
+
     /**
      * On stop p king chosen
      *

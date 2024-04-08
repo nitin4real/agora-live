@@ -23,6 +23,7 @@
         android:textColorHint="@color/text_color_66"
         android:textSize="14sp"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,6 +37,7 @@
         android:drawablePadding="6dp"
         android:textColor="@drawable/show_purple"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/textPking"
         app:layout_constraintEnd_toEndOf="@id/textPking"
         app:layout_constraintTop_toTopOf="@id/textPking"

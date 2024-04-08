@@ -3,3 +3,4 @@
 src/main/assets/resource
 \build
 authpack.java
+.DS_Store

@@ -1,6 +1,7 @@
 package io.agora.scene.show.widget.pk
 
 import android.view.View
+import androidx.core.view.isVisible
 import io.agora.scene.base.GlideApp
 import io.agora.scene.show.R
 import io.agora.scene.show.databinding.ShowLivePkRequestMessageBinding
@@ -27,12 +28,12 @@ class LivePKViewAdapter: BindingSingleAdapter<LiveRoomConfig, ShowLivePkRequestM
     ) {
         val roomItem = getItem(position)!!
         val binding = holder.binding
-        binding.titleItemBoardcasterStatus.text = roomItem.getOwnerName()
+        binding.titleItemBoardcasterStatus.text = roomItem.getOwnerName() + "  (ID:${roomItem.getRoomId()})"
         binding.coverBoardcasterIcon.visibility = View.VISIBLE
-        GlideApp.with(binding.coverBoardcasterIcon).load(roomItem.getOwnerAvatar())
+        GlideApp.with(binding.coverBoardcasterIcon).load(getFullHeadUrl(roomItem.getOwnerAvatar()))
             .fallback(R.mipmap.show_default_icon)
             .error(R.mipmap.show_default_icon)
-            .transform(CenterCropRoundCornerTransform(10))
+            .transform(CenterCropRoundCornerTransform(999))
             .into(binding.coverBoardcasterIcon)
         when (roomItem.getInteractStatus()) {
             ShowInteractionStatus.idle.value -> {
@@ -40,23 +41,32 @@ class LivePKViewAdapter: BindingSingleAdapter<LiveRoomConfig, ShowLivePkRequestM
                     binding.btnItemRequest.isEnabled = false
                     binding.btnItemRequest.setText(R.string.show_application_waitting)
                     binding.btnItemRequest.setOnClickListener(null)
+                    binding.iBtnCancelApply.isVisible = true
+                    binding.iBtnCancelApply.setOnClickListener {
+                        onClickListener.onCancel(roomItem, position)
+                    }
                 } else {
                     binding.btnItemRequest.isEnabled = true
                     binding.btnItemRequest.setText(R.string.show_application)
                     binding.btnItemRequest.setOnClickListener {
+                        binding.btnItemRequest.isEnabled = false
+                        binding.btnItemRequest.setText("Inviting")
                         onClickListener.onClick(roomItem, position)
                     }
+                    binding.iBtnCancelApply.isVisible = false
                 }
             }
             ShowInteractionStatus.pking.value -> {
                 binding.btnItemRequest.isEnabled = false
                 binding.btnItemRequest.setText(R.string.show_interacting)
                 binding.btnItemRequest.setOnClickListener(null)
+                binding.iBtnCancelApply.isVisible = false
             }
             ShowInteractionStatus.onSeat.value -> {
                 binding.btnItemRequest.isEnabled = false
                 binding.btnItemRequest.setText(R.string.show_interacting)
                 binding.btnItemRequest.setOnClickListener(null)
+                binding.iBtnCancelApply.isVisible = false
             }
         }
     }
@@ -79,6 +89,8 @@ class LivePKViewAdapter: BindingSingleAdapter<LiveRoomConfig, ShowLivePkRequestM
          * @param position
          */
         fun onClick(roomItem: LiveRoomConfig, position: Int)
+
+        fun onCancel(roomItem: LiveRoomConfig, position: Int)
     }
 
     /**
@@ -88,5 +100,16 @@ class LivePKViewAdapter: BindingSingleAdapter<LiveRoomConfig, ShowLivePkRequestM
      */
     fun setClickListener(listener : OnClickListener) {
         onClickListener = listener
+    }
+
+    /**
+     * Get full head url string.
+     *
+     * @return the string
+     */
+    private fun getFullHeadUrl(headUrl: String): String {
+        return if (headUrl.startsWith("http")) {
+            headUrl
+        } else "file:///android_asset/$headUrl.png"
     }
 }

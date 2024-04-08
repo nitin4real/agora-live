@@ -368,6 +368,13 @@ interface ShowServiceProtocol {
         error: ((Exception) -> Unit)? = null
     )
 
+    fun cancelPKInvitation(
+        roomId: String,
+        room: ShowRoomDetailModel,
+        success: (() -> Unit)? = null,
+        error: ((Exception) -> Unit)? = null
+    )
+
     /**
      * Accept p k invitation
      *

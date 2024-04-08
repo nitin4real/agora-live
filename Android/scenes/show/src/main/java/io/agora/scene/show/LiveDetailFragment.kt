@@ -1263,6 +1263,17 @@ class LiveDetailFragment : Fragment() {
                 }
             }
 
+            override fun onCancelButtonChosen(dialog: LivePKDialog, roomItem: LiveRoomConfig) {
+                if (roomItem.isRobotRoom()) {
+                    ToastUtils.showToast(context?.getString(R.string.show_tip1))
+                    return
+                }
+                if (isRoomOwner) {
+                    val roomDetail = roomItem.convertToShowRoomDetailModel()
+                    mService.cancelPKInvitation(mRoomInfo.roomId, roomDetail)
+                }
+            }
+
             override fun onStopPKingChosen(dialog: LivePKDialog) {
                 mService.stopInteraction(mRoomInfo.roomId, interactionInfo!!)
             }
@@ -1284,6 +1295,7 @@ class LiveDetailFragment : Fragment() {
      *
      * @param name
      */
+    private var pKInvitationDialog: AlertDialog? = null
     private fun showPKInvitationDialog(name: String) {
         val dialog = AlertDialog.Builder(requireContext(), R.style.show_alert_dialog).apply {
             setCancelable(false)
@@ -1304,6 +1316,7 @@ class LiveDetailFragment : Fragment() {
             }
         }.create()
         dialog.show()
+        pKInvitationDialog = dialog
         if (mPKInvitationCountDownLatch != null) {
             mPKInvitationCountDownLatch!!.cancel()
             mPKInvitationCountDownLatch = null
@@ -1497,6 +1510,10 @@ class LiveDetailFragment : Fragment() {
                     showPKInvitationDialog(info.fromName)
                 }
             } else {
+                if (info != null && info.userId == UserManager.getInstance().user.id.toString()) {
+                    pKInvitationDialog?.dismiss()
+                    mPKInvitationCountDownLatch?.cancel()
+                }
                 val curUserId = UserManager.getInstance().user.id.toString()
                 if (info != null && (info.userId == curUserId || info.fromUserId == curUserId)) {
 //                    deletedPKInvitation = info

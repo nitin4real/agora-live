@@ -48,6 +48,10 @@ class LivePKRequestMessageFragment : BaseFragment() {
             override fun onClick(roomItem: LiveRoomConfig, position: Int) {
                 mListener.onAcceptMicSeatItemChosen(roomItem)
             }
+
+            override fun onCancel(roomItem: LiveRoomConfig, position: Int) {
+                mListener.onCancelMicSeatItemChosen(roomItem)
+            }
         })
     }
 
@@ -138,6 +142,8 @@ class LivePKRequestMessageFragment : BaseFragment() {
          * @param roomItem
          */
         fun onAcceptMicSeatItemChosen(roomItem: LiveRoomConfig)
+
+        fun onCancelMicSeatItemChosen(roomItem: LiveRoomConfig)
 
         /**
          * On request refreshing
