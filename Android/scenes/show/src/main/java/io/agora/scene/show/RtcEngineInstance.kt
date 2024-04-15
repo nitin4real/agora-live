@@ -111,6 +111,7 @@ object RtcEngineInstance {
                 innerRtcEngine = (RtcEngine.create(config) as RtcEngineEx).apply {
                     enableVideo()
                     setAudioScenario(Constants.AUDIO_SCENARIO_GAME_STREAMING)
+                    setParameters("{\"rtc.enable_auto_log_upload\": true, \"rtc.log_size\": 9999999}")
                 }
                 beautyProcessor.initialize(innerRtcEngine!!)
             }
@@ -123,6 +124,13 @@ object RtcEngineInstance {
      */
     fun cleanCache() {
         VideoSwitcher.getImplInstance(rtcEngine).unloadConnections()
+    }
+
+    fun releaseBeautyProcessor() {
+        innerBeautyProcessor?.let { processor ->
+            processor.release()
+            innerBeautyProcessor = null
+        }
     }
 
 

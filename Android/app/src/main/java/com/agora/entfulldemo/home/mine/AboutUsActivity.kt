@@ -138,19 +138,19 @@ class AboutUsActivity : BaseViewBindingActivity<AppActivityAboutUsBinding>() {
      */
     private fun setupDebugMode() {
         binding.tvDebugMode.visibility = View.INVISIBLE
-        adapter.onClickVersionListener = {
-            if (counts == 0 || System.currentTimeMillis() - beginTime > debugModeOpenTime) {
-                beginTime = System.currentTimeMillis()
-                counts = 0
-            }
-            counts++
-            if (counts > debugClickCount) {
-                counts = 0
-                binding.tvDebugMode.visibility = View.VISIBLE
-                AgoraApplication.the().enableDebugMode(true)
-                ToastUtils.showToast(R.string.app_debug_open)
-            }
-        }
+//        adapter.onClickVersionListener = {
+//            if (counts == 0 || System.currentTimeMillis() - beginTime > debugModeOpenTime) {
+//                beginTime = System.currentTimeMillis()
+//                counts = 0
+//            }
+//            counts++
+//            if (counts > debugClickCount) {
+//                counts = 0
+//                binding.tvDebugMode.visibility = View.VISIBLE
+//                AgoraApplication.the().enableDebugMode(true)
+//                ToastUtils.showToast(R.string.app_debug_open)
+//            }
+//        }
         binding.tvDebugMode.setOnClickListener {
             showDebugModeCloseDialog()
         }

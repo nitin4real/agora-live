@@ -5,8 +5,10 @@ import android.content.ClipboardManager
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceView
+import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -19,6 +21,7 @@ import androidx.core.view.isVisible
 import io.agora.rtc2.Constants
 import io.agora.rtc2.RtcConnection
 import io.agora.rtc2.video.CameraCapturerConfiguration
+import io.agora.rtc2.video.VideoCanvas
 import io.agora.scene.base.TokenGenerator
 import io.agora.scene.base.component.AgoraApplication
 import io.agora.scene.base.component.BaseViewBindingActivity
@@ -31,6 +34,7 @@ import io.agora.scene.show.service.ShowServiceProtocol
 import io.agora.scene.show.widget.BeautyDialog
 import io.agora.scene.show.widget.PictureQualityDialog
 import io.agora.scene.show.widget.PresetDialog
+import io.agora.scene.show.widget.ToastDialog
 import io.agora.scene.widget.dialog.PermissionLeakDialog
 import io.agora.scene.widget.utils.StatusBarUtil
 import kotlin.random.Random
@@ -114,6 +118,7 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
             return@setOnEditorActionListener false
         }
         binding.ivClose.setOnClickListener {
+            RtcEngineInstance.releaseBeautyProcessor()
             finish()
         }
 
@@ -140,6 +145,7 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
                 showPresetDialog()
             }
         }
+        mBeautyProcessor.initialize(mRtcEngine)
         if (mRtcEngine.queryDeviceScore() < 75) {
             // 低端机默认关闭美颜
             mBeautyProcessor.setBeautyEnable(false)
@@ -154,7 +160,8 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
             mBeautyProcessor.reset()
             initRtcEngine()
             //getDeviceScoreAndUpdateVideoProfile()
-            showPresetDialog()
+            //showPresetDialog()
+            onPresetNetworkModeSelected()
         }
         requestCameraPermission(true)
     }
@@ -216,6 +223,10 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
         if (!isFinishToLiveDetail) {
             mRtcEngine.stopPreview()
         }
+    }
+
+    override fun onBackPressed() {
+
     }
 
     /**
@@ -296,20 +307,31 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
         }
 
         binding.btnStartLive.isEnabled = false
+        Log.d("hugo", "1111")
 
         mayFetchUniversalToken {
-            mService.createRoom(mRoomId, roomName, mThumbnailId, {
+            Log.d("hugo", "22222:$it")
+            if (it) {
+                Log.d("hugo", "3333")
+                mService.createRoom(mRoomId, roomName, mThumbnailId, {
+                    Log.d("hugo", "4444")
+                    runOnUiThread {
+                        isFinishToLiveDetail = true
+                        LiveDetailActivity.launch(this@LivePrepareActivity, it)
+                        finish()
+                    }
+                }, {
+                    Log.d("hugo", "5555")
+                    runOnUiThread {
+                        ToastUtils.showToast(it.message)
+                        binding.btnStartLive.isEnabled = true
+                    }
+                })
+            } else {
                 runOnUiThread {
-                    isFinishToLiveDetail = true
-                    LiveDetailActivity.launch(this@LivePrepareActivity, it)
-                    finish()
-                }
-            }, {
-                runOnUiThread {
-                    ToastUtils.showToast(it.message)
                     binding.btnStartLive.isEnabled = true
                 }
-            })
+            }
         }
     }
 
@@ -320,10 +342,10 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
      * @receiver
      */
     private fun mayFetchUniversalToken(
-        complete: () -> Unit
+        complete: (success: Boolean) -> Unit
     ) {
         if(RtcEngineInstance.generalToken().isNotEmpty()){
-            complete.invoke()
+            complete.invoke(true)
             return
         }
         val localUId = UserManager.getInstance().user.id
@@ -333,10 +355,11 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
             success = {
                 ShowLogger.d("RoomListActivity", "generateToken success：$it， uid：$localUId")
                 RtcEngineInstance.setupGeneralToken(it)
-                complete.invoke()
+                complete.invoke(true)
             },
             failure = {
                 ShowLogger.e("RoomListActivity", it, "generateToken failure：$it")
+                complete.invoke(false)
                 ToastUtils.showToast(it?.message ?: "generate token failure")
             })
     }
@@ -368,6 +391,21 @@ class LivePrepareActivity : BaseViewBindingActivity<ShowLivePrepareActivityBindi
         "2" -> R.mipmap.show_room_cover_2
         "3" -> R.mipmap.show_room_cover_3
         else -> R.mipmap.show_room_cover_0
+    }
+
+    private fun onPresetNetworkModeSelected() {
+        val broadcastStrategy = VideoSetting.BroadcastStrategy.Smooth
+        val network = VideoSetting.NetworkLevel.Good
+
+        val deviceLevel = if (mRtcEngine.queryDeviceScore() >= 90) {
+            VideoSetting.DeviceLevel.High
+        } else if (mRtcEngine.queryDeviceScore() >= 75) {
+            VideoSetting.DeviceLevel.Medium
+        } else {
+            VideoSetting.DeviceLevel.Low
+        }
+
+        VideoSetting.updateBroadcastSetting(deviceLevel, network, broadcastStrategy, isJoinedRoom = false, isByAudience = false, RtcConnection(mRoomId, UserManager.getInstance().user.id.toInt()))
     }
 
 }

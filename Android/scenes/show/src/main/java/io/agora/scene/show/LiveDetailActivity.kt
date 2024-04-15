@@ -354,4 +354,7 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
         super.finish()
     }
 
+    override fun onBackPressed() {
+
+    }
 }

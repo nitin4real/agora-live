@@ -401,6 +401,8 @@ interface ShowServiceProtocol {
         error: ((Exception) -> Unit)? = null
     )
 
+    fun startInteraction(info: ShowPKInvitation)
+
     /**
      * Get all interation list
      *

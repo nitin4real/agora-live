@@ -110,10 +110,10 @@ class LivePKSettingsDialog(context: Context) : BottomDarkDialog(context) {
 //        ),
         SettingItem(
             ITEM_ID_STOP_PK,
-            R.mipmap.show_stop_link,
-            R.mipmap.show_stop_link,
-            R.string.show_stop_linking,
-            R.string.show_stop_linking
+            R.mipmap.show_setting_ic_statistic,
+            R.mipmap.show_setting_ic_statistic,
+            R.string.show_setting_statistic,
+            R.string.show_setting_statistic
         )
     )
 
@@ -227,10 +227,10 @@ class LivePKSettingsDialog(context: Context) : BottomDarkDialog(context) {
 //            ),
             SettingItem(
                 ITEM_ID_STOP_PK,
-                R.mipmap.show_stop_link,
-                R.mipmap.show_stop_link,
-                R.string.show_stop_linking,
-                R.string.show_stop_linking
+                R.mipmap.show_setting_ic_statistic,
+                R.mipmap.show_setting_ic_statistic,
+                R.string.show_setting_statistic,
+                R.string.show_setting_statistic
             )
         )
         mAdapter.resetAll(itemList)

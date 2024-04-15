@@ -3,9 +3,11 @@ package io.agora.scene.show.service
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import io.agora.scene.base.BuildConfig
 import io.agora.scene.base.manager.UserManager
 import io.agora.scene.base.utils.TimeUtils
+import io.agora.scene.base.utils.ToastUtils
 import io.agora.scene.show.R
 import io.agora.scene.show.ShowLogger
 import io.agora.scene.show.utils.ShowConstants
@@ -40,7 +42,7 @@ class ShowSyncManagerServiceImpl constructor(
     /**
      * K scene id
      */
-    private val kSceneId = "scene_show_1.0.0_pk101"
+    private val kSceneId = "scene_show_1.0.0_pk102"
 
     /**
      * K collection id user
@@ -225,7 +227,7 @@ class ShowSyncManagerServiceImpl constructor(
                         var roomList = result!!.map {
                             it.toObject(ShowRoomDetailModel::class.java)
                         }
-                        roomList = removeExpiredRooms(roomList)
+                        //roomList = removeExpiredRooms(roomList)
 
                         roomMap.clear()
                         roomList.forEach { roomMap[it.roomId] = it.copy() }
@@ -388,17 +390,22 @@ class ShowSyncManagerServiceImpl constructor(
         error: ((Exception) -> Unit)?
     ) {
         initSync {
-            createRoomInner(
-                roomId,
-                roomName,
-                0,
-                thumbnailId,
-                UserManager.getInstance().user.id.toString(),
-                UserManager.getInstance().user.headUrl,
-                UserManager.getInstance().user.name,
-                success,
-                error
-            )
+            Log.d("hugo", "66666$it")
+            if (it == null) {
+                createRoomInner(
+                    roomId,
+                    roomName,
+                    0,
+                    thumbnailId,
+                    UserManager.getInstance().user.id.toString(),
+                    UserManager.getInstance().user.headUrl,
+                    UserManager.getInstance().user.name,
+                    success,
+                    error
+                )
+            } else {
+                error?.invoke(it)
+            }
         }
     }
 
@@ -446,15 +453,19 @@ class ShowSyncManagerServiceImpl constructor(
             userId = roomDetail.ownerId
             property = roomDetail.toMap()
         }
+        Log.d("hugo", "0000")
         Sync.Instance().createScene(
             scene,
             object : Sync.Callback {
                 override fun onSuccess() {
+                    Log.d("hugo", "8888")
                     roomMap[roomDetail.roomId] = roomDetail.copy()
+                    success.invoke(roomDetail)
                     success.invoke(roomDetail)
                 }
 
                 override fun onFail(exception: SyncManagerException?) {
+                    Log.d("hugo", "9999")
                     errorHandler.invoke(exception!!)
                     error?.invoke(exception)
                 }
@@ -568,6 +579,8 @@ class ShowSyncManagerServiceImpl constructor(
         val roomInfoController = roomInfoControllers.firstOrNull { it.roomId == roomId } ?: return
         val roomDetail = roomMap[roomId] ?: return
         val sceneReference = roomInfoController.sceneReference ?: return
+
+        isInteractionCreated = false
 
         sendChatMessage(roomId, context.getString(R.string.show_live_chat_leaving))
 
@@ -1232,7 +1245,7 @@ class ShowSyncManagerServiceImpl constructor(
                     error = {}
                 )
             }
-        }, null)
+        }, error)
     }
 
     override fun cancelPKInvitation(
@@ -1352,6 +1365,19 @@ class ShowSyncManagerServiceImpl constructor(
         innerRemovePKInvitation(roomInfoController.sceneReference, removedObjId, success, error)
     }
 
+    override fun startInteraction(info: ShowPKInvitation) {
+        val interaction = ShowInteractionInfo(
+            info.userId,
+            info.userName,
+            info.roomId,
+            ShowInteractionStatus.pking.value,
+            muteAudio = false,
+            ownerMuteAudio = false,
+            createdAt = info.createAt
+        )
+        innerCreateInteraction(info.fromRoomId, interaction, null, null)
+    }
+
     /**
      * Get all interation list
      *
@@ -1410,16 +1436,25 @@ class ShowSyncManagerServiceImpl constructor(
             return
         }
 
-        innerGetAllInteractionList(roomId, {
-            roomInfoController.objIdOfInteractionInfo.forEach {
-                innerRemoveInteraction(
-                    roomId,
-                    it,
-                    success,
-                    error
-                )
-            }
-        }, null)
+        roomInfoController.objIdOfInteractionInfo.forEach {
+            innerRemoveInteraction(
+                roomId,
+                it,
+                success,
+                error
+            )
+        }
+
+//        innerGetAllInteractionList(roomId, {
+//            roomInfoController.objIdOfInteractionInfo.forEach {
+//                innerRemoveInteraction(
+//                    roomId,
+//                    it,
+//                    success,
+//                    error
+//                )
+//            }
+//        }, null)
 
         val apply = roomInfoController.micSeatApplyList.filter { it.userId == interaction.userId }
             .getOrNull(0)
@@ -1596,9 +1631,9 @@ class ShowSyncManagerServiceImpl constructor(
      * @param complete
      * @receiver
      */
-    private fun initSync(complete: () -> Unit) {
+    private fun initSync(complete: (exception: Exception?) -> Unit) {
         if (syncInitialized) {
-            complete.invoke()
+            complete.invoke(null)
             return
         }
         syncInitialized = true
@@ -1606,17 +1641,19 @@ class ShowSyncManagerServiceImpl constructor(
             RethinkConfig(BuildConfig.AGORA_APP_ID, kSceneId),
             object : Sync.Callback {
                 override fun onSuccess() {
-                    runOnMainThread { complete.invoke() }
+                    runOnMainThread { complete.invoke(null) }
                 }
 
                 override fun onFail(exception: SyncManagerException?) {
                     syncInitialized = false
                     errorHandler.invoke(exception!!)
+                    runOnMainThread { complete.invoke(exception) }
                 }
             }
         )
         Sync.Instance().subscribeConnectState {
             ShowLogger.d(TAG, "subscribeConnectState state=$it")
+            ToastUtils.showToast("websocket connect state: $it")
             if (it == Sync.ConnectionState.open) {
                 runOnMainThread {
                     roomInfoControllers.forEach { roomInfoController ->
@@ -2009,6 +2046,7 @@ class ShowSyncManagerServiceImpl constructor(
                 val roomInfo = roomMap.remove(item.id)
                 ShowLogger.d(TAG, "SubscribeRoomChange Delete roomNo=${item.id}")
                 if (roomInfoController.roomId.isNotEmpty() && roomInfoController.roomId == item.id) {
+                    ShowLogger.d(TAG, "SubscribeRoomChange Delete roomNo=${item.id} ------")
                     runOnMainThread {
                         roomInfoController.roomChangeSubscriber?.invoke(
                             ShowServiceProtocol.ShowSubscribeStatus.deleted,
@@ -2227,7 +2265,7 @@ class ShowSyncManagerServiceImpl constructor(
      * @param error
      * @receiver
      */
-    private fun innerGetPKInvitationList(
+    fun innerGetPKInvitationList(
         localRoomId: String,
         room: ShowRoomDetailModel?,
         success: (List<ShowPKInvitation>) -> Unit,
@@ -2489,10 +2527,10 @@ class ShowSyncManagerServiceImpl constructor(
                 val acceptItem =
                     roomInfoController.pKCompetitorInvitationList.filter { it.status == ShowRoomRequestStatus.accepted.value }
                         .getOrNull(0)
-                if (acceptItem != null && acceptItem.userId != info.userId && info.status == ShowRoomRequestStatus.accepted.value) {
-                    innerRemovePKInvitation(roomInfoController.sceneReference, item.id, null, null)
-                    return
-                }
+//                if (acceptItem != null && acceptItem.userId != info.userId && info.status == ShowRoomRequestStatus.accepted.value) {
+//                    innerRemovePKInvitation(roomInfoController.sceneReference, item.id, null, null)
+//                    return
+//                }
 
                 val list =
                     roomInfoController.pKCompetitorInvitationList.filter { it.userId == info.userId }
