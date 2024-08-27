@@ -123,6 +123,12 @@
                 @"iconImgStr":@"home_KTV_icon",
                 @"titleStr":NSLocalizedString(@"app_online_ktv", nil),
                 @"subTitleStr":@""
+            },
+            @{
+                @"bgImgStr":@"home_KTV_bg",
+                @"iconImgStr":@"home_KTV_icon",
+                @"titleStr":NSLocalizedString(@"app_online_ktv", nil),
+                @"subTitleStr":@""
             }
         ];
     }

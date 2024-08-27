@@ -22,6 +22,23 @@ PODS:
     - Zip
   - AgoraRtcEngine_Special_iOS (4.3.2.2)
   - AgoraRtm (2.2.1)
+  - DreamFlow (0.1.0):
+    - AFNetworking
+    - Agora-Scene-Utils
+    - AgoraRtcEngine_Special_iOS
+    - KakaJSON
+    - Masonry
+    - MJRefresh
+    - RTMSyncManager
+    - SDWebImage
+    - SnapKit
+    - SSZipArchive
+    - SVProgressHUD
+    - SwiftyBeaver
+    - VideoLoaderAPI
+    - YYCategories
+    - YYModel
+    - ZSwiftBaseLib
   - fuLib (1.0):
     - FURenderKit (= 8.6.0)
   - FURenderKit (8.6.0)
@@ -71,6 +88,7 @@ DEPENDENCIES:
   - AgoraLyricsScore (from `https://github.com/AgoraIO-Community/LrcView-iOS.git`, commit `b06752185ed5264fd09a8117bd78fb11202749b5`, branch `feature/dev_2.1.0`)
   - AgoraRtcEngine_Special_iOS (= 4.3.2.2)
   - AgoraRtm (from `AgoraRtm.podspec`)
+  - DreamFlow (from `AgoraEntScenarios/Scenes/DreamFlow`)
   - fuLib (from `fu.podspec`)
   - HWWeakTimer (= 1.0)
   - JXCategoryView (= 1.6.1)
@@ -131,6 +149,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/AgoraIO-Community/LrcView-iOS.git
   AgoraRtm:
     :path: AgoraRtm.podspec
+  DreamFlow:
+    :path: AgoraEntScenarios/Scenes/DreamFlow
   fuLib:
     :path: fu.podspec
   RTMSyncManager:
@@ -151,6 +171,7 @@ SPEC CHECKSUMS:
   AgoraLyricsScore: 47fa1cc855810ddc3013ee4ec6ce8c926ca9b22c
   AgoraRtcEngine_Special_iOS: 4f1a1d2f2e7b564735fd74ced733c76e33b5dc04
   AgoraRtm: 021fe357e5e6629a35dff013e84e2a06c84f5e0c
+  DreamFlow: c54521f1d14ef67dd056ac49b1f4cc8c6b175033
   fuLib: a59e706f8b8a3826dcbe93d427fba2bcafc643aa
   FURenderKit: bcff9889dbbafcd12839d57ee85d03b466e1a6fb
   HWWeakTimer: 79488095ef2dd8937f94b676d12bd5fa954486e6
@@ -177,6 +198,6 @@ SPEC CHECKSUMS:
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
   ZSwiftBaseLib: f5d039af0c4be833bb86c6d382930775c4087ab9
 
-PODFILE CHECKSUM: 64ea38999c775b832f68daba39f7cd1407f74ba8
+PODFILE CHECKSUM: 63fd3d7e6b9207318694da350f4a1516bb4f8759
 
 COCOAPODS: 1.15.2

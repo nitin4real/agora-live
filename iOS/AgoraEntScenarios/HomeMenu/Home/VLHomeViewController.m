@@ -11,6 +11,7 @@
 #import "VLToast.h"
 #import "VLOnLineListVC.h"
 #import "AgoraEntScenarios-Swift.h"
+#import <DreamFlow/DreamFlow-Swift.h>
 
 @interface VLHomeViewController ()<VLHomeViewDelegate>
 
@@ -68,7 +69,7 @@
 
 
 - (void)itemClickAction:(int)tagValue {
-    NSArray* sceneNames = @[@"LiveShow", @"E-Commerce", @"VoiceChat", @"KTV"];
+    NSArray* sceneNames = @[@"LiveShow", @"E-Commerce", @"VoiceChat", @"KTV", @"DreamFlow"];
     [[NetworkManager shared] reportSceneClickWithSceneName:sceneNames[tagValue]];
     [[NetworkManager shared] reportDeviceInfoWithSceneName:sceneNames[tagValue]];
     [[NetworkManager shared] reportUserBehaviorWithSceneName:sceneNames[tagValue]];
@@ -92,6 +93,15 @@
         case 3: {
             VLOnLineListVC *vc = [[VLOnLineListVC alloc] init];
             [self.navigationController pushViewController:vc animated:YES];
+            break;
+        }
+        case 4: {
+            DreamFlowUserInfo *userInfo = [DreamFlowUserInfo new];
+            userInfo.uid = VLUserCenter.user.id;
+            userInfo.userName = VLUserCenter.user.name;
+            userInfo.avatar = VLUserCenter.user.headUrl;
+            
+            [DreamFlowContext showSceneWithViewController:self appId:KeyCenter.AppId host:KeyCenter.HostUrl appCertificate:KeyCenter.Certificate releaseBaseUrl:KeyCenter.releaseBaseServerUrl debugBaseUrl:KeyCenter.debugBaseServerUrl imAppKey:KeyCenter.IMAppKey imClientId:KeyCenter.IMClientId imClientSecret:KeyCenter.IMClientSecret cloudPlayerKey:KeyCenter.CloudPlayerKey cloudPlayerSecret:KeyCenter.CloudPlayerSecret rtmHostUrl:KeyCenter.RTMHostUrl userInfo:userInfo];
             break;
         }
         default: break;
